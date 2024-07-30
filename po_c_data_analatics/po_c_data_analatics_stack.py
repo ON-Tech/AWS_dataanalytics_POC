@@ -194,7 +194,7 @@ class PoCDataAnalaticsStack(Stack):
                     credentials_role=APIGateway_Firehose,
                     request_templates={
                         "application/json": json.dumps({
-                            "DeliveryStreamName": firehose_delivery_stream.ref,
+                            "DeliveryStreamName": firehose_delivery_stream.delivery_stream_name,
                             "Record": {
                                 "Data": "$util.base64Encode($util.escapeJavaScript($input.json('$')).replace('\'', ''))"
                             }
@@ -212,15 +212,3 @@ class PoCDataAnalaticsStack(Stack):
             )
         )
 
-# policies to allow API Gateway to send streaming data to Amazon Kinesis Data Firehose
-        api_firehose_policy = iam.PolicyStatement(
-            effect=iam.Effect.ALLOW,
-            resources=[APIGateway_Firehose.role_arn],
-            actions=[
-                "firehose:PutRecord"
-            ],
-            sid="APIFirehosePolicy"
-        )
-
-        # Add the policy to the API Gateway role
-        APIGateway_Firehose.add_to_policy(api_firehose_policy)
