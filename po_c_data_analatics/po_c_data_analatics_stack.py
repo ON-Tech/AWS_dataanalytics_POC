@@ -177,6 +177,7 @@ class PoCDataAnalaticsStack(Stack):
             self, 'clickstream-ingest-poc',
             rest_api_name='clickstream-ingest-poc',
             deploy_options=apigw.StageOptions(stage_name='prod'),
+            
         )
         
         # Create a resource and method for the API
@@ -210,3 +211,16 @@ class PoCDataAnalaticsStack(Stack):
                 )
             )
         )
+
+# policies to allow API Gateway to send streaming data to Amazon Kinesis Data Firehose
+        api_firehose_policy = iam.PolicyStatement(
+            effect=iam.Effect.ALLOW,
+            resources=[APIGateway_Firehose.role_arn],
+            actions=[
+                "firehose:PutRecord"
+            ],
+            sid="APIFirehosePolicy"
+        )
+
+        # Add the policy to the API Gateway role
+        APIGateway_Firehose.add_to_policy(api_firehose_policy)
